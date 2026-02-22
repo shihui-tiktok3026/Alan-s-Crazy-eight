@@ -27,7 +27,7 @@ export interface Card {
   rank: Rank;
 }
 
-export type GamePhase = 'dealing' | 'playing' | 'gameOver';
+export type GamePhase = 'start' | 'dealing' | 'playing' | 'gameOver';
 export type Turn = 'player' | 'ai';
 
 export interface GameState {

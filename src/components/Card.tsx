@@ -27,38 +27,44 @@ export const Card: React.FC<CardProps> = ({ card, isFaceUp = true, onClick, isPl
     <motion.div
       layoutId={card.id}
       onClick={isPlayable ? onClick : undefined}
-      whileHover={isPlayable ? { y: -20, scale: 1.05 } : {}}
+      whileHover={isPlayable ? { y: -20, scale: 1.1, rotate: 2 } : {}}
       className={`
-        relative w-24 h-36 md:w-32 md:h-48 rounded-xl cursor-pointer select-none
+        relative w-24 h-36 md:w-32 md:h-48 rounded-2xl cursor-pointer select-none
         transition-all duration-200 card-shadow
-        ${isPlayable ? 'ring-4 ring-yellow-400/50' : ''}
+        ${isPlayable ? 'ring-8 ring-yellow-400/80' : ''}
         ${className}
       `}
     >
       {isFaceUp ? (
-        <div className="w-full h-full bg-white rounded-xl p-2 flex flex-col justify-between border border-stone-200">
+        <div className="w-full h-full bg-white rounded-2xl p-3 flex flex-col justify-between border-4 border-stone-100">
           <div className={`flex flex-col items-start ${isRed ? 'text-red-500' : 'text-stone-900'}`}>
-            <span className="text-xl md:text-2xl font-bold leading-none">{card.rank}</span>
-            <SuitIcon suit={card.suit} size={16} />
+            <span className="text-2xl md:text-3xl font-bold leading-none">{card.rank}</span>
+            <SuitIcon suit={card.suit} size={20} />
           </div>
           
           <div className="flex justify-center items-center flex-1">
-            <SuitIcon suit={card.suit} size={48} />
+            <motion.div
+              animate={isPlayable ? { scale: [1, 1.1, 1] } : {}}
+              transition={{ repeat: Infinity, duration: 2 }}
+            >
+              <SuitIcon suit={card.suit} size={56} />
+            </motion.div>
           </div>
 
           <div className={`flex flex-col items-end rotate-180 ${isRed ? 'text-red-500' : 'text-stone-900'}`}>
-            <span className="text-xl md:text-2xl font-bold leading-none">{card.rank}</span>
-            <SuitIcon suit={card.suit} size={16} />
+            <span className="text-2xl md:text-3xl font-bold leading-none">{card.rank}</span>
+            <SuitIcon suit={card.suit} size={20} />
           </div>
         </div>
       ) : (
-        <div className="w-full h-full bg-stone-800 rounded-xl border-4 border-stone-700 flex items-center justify-center overflow-hidden">
-           <div className="w-full h-full opacity-20" style={{
-             backgroundImage: `repeating-linear-gradient(45deg, #444 0, #444 10px, #333 10px, #333 20px)`
+        <div className="w-full h-full bg-blue-500 rounded-2xl border-4 border-white flex items-center justify-center overflow-hidden shadow-inner">
+           <div className="w-full h-full opacity-30" style={{
+             backgroundImage: `radial-gradient(circle, #fff 20%, transparent 20%)`,
+             backgroundSize: '20px 20px'
            }} />
            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-2 border-stone-600 flex items-center justify-center">
-                <span className="text-stone-600 font-serif italic text-xl">8</span>
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border-2 border-white/50">
+                <span className="text-white font-bold text-3xl drop-shadow-md">8</span>
               </div>
            </div>
         </div>

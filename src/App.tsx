@@ -4,20 +4,88 @@ import { Card as CardComponent } from './components/Card';
 import { SuitPicker } from './components/SuitPicker';
 import { Card, GameState, Suit, Rank, Turn } from './types';
 import { createDeck, shuffleDeck, INITIAL_HAND_SIZE } from './constants';
-import { RefreshCw, Trophy, AlertCircle, Info, Star } from 'lucide-react';
+import { RefreshCw, Trophy, AlertCircle, Info, Star, Cat } from 'lucide-react';
 
 const FiveStarLogo = () => (
   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none flex flex-col items-center gap-4">
     <div className="flex gap-4">
-      <Star size={120} className="fill-red-600 text-red-600" />
-      <Star size={120} className="fill-red-600 text-red-600" />
-      <Star size={120} className="fill-red-600 text-red-600" />
+      <Star size={120} className="fill-yellow-400 text-yellow-400" />
+      <Star size={120} className="fill-yellow-400 text-yellow-400" />
+      <Star size={120} className="fill-yellow-400 text-yellow-400" />
     </div>
     <div className="flex gap-4">
-      <Star size={120} className="fill-red-600 text-red-600" />
-      <Star size={120} className="fill-red-600 text-red-600" />
+      <Star size={120} className="fill-yellow-400 text-yellow-400" />
+      <Star size={120} className="fill-yellow-400 text-yellow-400" />
     </div>
   </div>
+);
+
+const LionBackground = () => (
+  <div className="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
+    <div className="grid grid-cols-4 md:grid-cols-6 gap-24 p-8 rotate-12 scale-150">
+      {Array.from({ length: 48 }).map((_, i) => (
+        <div key={i} className="flex items-center justify-center grayscale contrast-125">
+          <img 
+            src="https://picsum.photos/seed/lion-head/200/200" 
+            alt="Lion" 
+            className="w-32 h-32 object-cover rounded-full"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const StartScreen = ({ onStart }: { onStart: () => void }) => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[200] flex items-center justify-center bg-sky-400/80 backdrop-blur-lg p-4"
+  >
+    <motion.div 
+      initial={{ scale: 0.9, y: 20, rotate: -2 }}
+      animate={{ scale: 1, y: 0, rotate: 0 }}
+      className="bg-white rounded-[3rem] p-8 md:p-12 max-w-2xl w-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] text-stone-900 border-8 border-yellow-400"
+    >
+      <div className="flex justify-center mb-6">
+        <motion.div 
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 4 }}
+          className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 shadow-inner"
+        >
+          <Star size={48} className="fill-current" />
+        </motion.div>
+      </div>
+      <h1 className="text-5xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 drop-shadow-sm">
+        Alan的疯狂8点
+      </h1>
+      
+      <div className="space-y-6 mb-10 text-left bg-stone-50 p-6 rounded-3xl border-2 border-stone-100">
+        <section>
+          <h3 className="font-bold text-xl mb-3 flex items-center gap-2 text-blue-600">
+            <Info size={22} className="fill-blue-100" /> 游戏规则
+          </h3>
+          <ul className="list-disc list-inside text-stone-600 space-y-2 text-sm md:text-base font-medium">
+            <li>每位玩家初始分发 <span className="text-pink-500 font-bold">8</span> 张牌。</li>
+            <li>你可以打出与弃牌堆顶牌<span className="text-purple-500 font-bold">同花色</span>或<span className="text-purple-500 font-bold">同点数</span>的牌。</li>
+            <li><span className="text-yellow-500 font-bold">8 是万能牌！</span> 任何时候都可以打出 8，并指定接下来的花色。</li>
+            <li>如果没有可打的牌，必须从牌堆摸一张。</li>
+            <li>如果牌堆已空且无牌可出，则跳过该回合。</li>
+            <li>最先清空手牌的玩家获胜！</li>
+          </ul>
+        </section>
+      </div>
+
+      <button
+        onClick={onStart}
+        className="w-full py-5 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-2xl font-bold text-2xl shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:scale-105 transition-all active:scale-95 border-b-8 border-emerald-700"
+      >
+        开始游戏
+      </button>
+    </motion.div>
+  </motion.div>
 );
 
 const SUIT_NAMES: Record<Suit, string> = {
@@ -34,7 +102,7 @@ export default function App() {
     playerHand: [],
     aiHand: [],
     currentTurn: 'player',
-    phase: 'dealing',
+    phase: 'start',
     activeSuit: null,
     winner: null,
     lastAction: '欢迎来到 Alan的疯狂8点！',
@@ -42,6 +110,10 @@ export default function App() {
 
   const [showSuitPicker, setShowSuitPicker] = useState(false);
   const [pendingEightPlay, setPendingEightPlay] = useState<{ card: Card, turn: Turn } | null>(null);
+
+  const resetToStart = () => {
+    setState(prev => ({ ...prev, phase: 'start' }));
+  };
 
   // Initialize Game
   const initGame = useCallback(() => {
@@ -68,10 +140,6 @@ export default function App() {
       lastAction: '游戏开始！轮到你了。',
     });
   }, []);
-
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   const topDiscard = state.discardPile[state.discardPile.length - 1];
 
@@ -216,7 +284,14 @@ export default function App() {
 
   return (
     <div className="h-screen w-full felt-bg flex flex-col items-center justify-between p-4 overflow-hidden">
+      <LionBackground />
       <FiveStarLogo />
+
+      <AnimatePresence>
+        {state.phase === 'start' && (
+          <StartScreen onStart={initGame} />
+        )}
+      </AnimatePresence>
       
       <div className="absolute top-4 left-4 z-50">
         <h1 className="text-2xl font-serif italic text-blue-800/40 select-none">Alan的疯狂8点</h1>
@@ -309,32 +384,36 @@ export default function App() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-sky-400/80 backdrop-blur-md p-4"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-stone-900 border border-white/10 rounded-3xl p-12 max-w-md w-full text-center shadow-2xl"
+              className="bg-white rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl border-8 border-yellow-400"
             >
               <div className="mb-6 flex justify-center">
-                <div className={`p-6 rounded-full ${state.winner === 'player' ? 'bg-yellow-400/20 text-yellow-400' : 'bg-red-400/20 text-red-400'}`}>
-                  {state.winner === 'player' ? <Trophy size={64} /> : <AlertCircle size={64} />}
-                </div>
+                <motion.div 
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className={`p-8 rounded-full ${state.winner === 'player' ? 'bg-yellow-100 text-yellow-500' : 'bg-red-100 text-red-500'}`}
+                >
+                  {state.winner === 'player' ? <Trophy size={80} /> : <AlertCircle size={80} />}
+                </motion.div>
               </div>
-              <h2 className="text-4xl font-serif italic mb-2">
-                {state.winner === 'player' ? '胜利！' : '失败...'}
+              <h2 className="text-5xl font-bold mb-4 text-stone-900">
+                {state.winner === 'player' ? '你赢啦！' : '输掉啦...'}
               </h2>
-              <p className="text-stone-400 mb-8">
+              <p className="text-stone-500 mb-10 text-lg font-medium">
                 {state.winner === 'player' 
-                  ? '你清空了手牌，赢得了比赛！' 
-                  : 'AI 先清空了手牌。下次好运！'}
+                  ? '太棒了！你清空了所有手牌！' 
+                  : '哎呀，AI 抢先一步清空了手牌。'}
               </p>
               <button
-                onClick={initGame}
-                className="w-full py-4 bg-stone-100 text-stone-900 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white transition-colors"
+                onClick={resetToStart}
+                className="w-full py-5 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-2xl font-bold text-2xl shadow-lg hover:scale-105 transition-all active:scale-95 border-b-8 border-indigo-700 flex items-center justify-center gap-3"
               >
-                <RefreshCw size={20} />
-                再玩一次
+                <RefreshCw size={24} />
+                返回主页
               </button>
             </motion.div>
           </motion.div>
@@ -344,11 +423,11 @@ export default function App() {
       {/* Controls Overlay */}
       <div className="fixed top-4 right-4 flex gap-2 z-50">
         <button 
-          onClick={initGame}
-          className="p-3 bg-white/50 hover:bg-white/80 rounded-full border border-blue-200 text-blue-600 shadow-sm transition-all"
-          title="重新开始"
+          onClick={resetToStart}
+          className="p-4 bg-white/80 hover:bg-white rounded-2xl border-4 border-blue-200 text-blue-500 shadow-lg transition-all active:scale-90"
+          title="返回主页"
         >
-          <RefreshCw size={20} />
+          <RefreshCw size={24} />
         </button>
       </div>
     </div>
