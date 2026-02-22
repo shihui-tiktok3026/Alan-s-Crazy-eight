@@ -7,15 +7,15 @@ import { createDeck, shuffleDeck, INITIAL_HAND_SIZE } from './constants';
 import { RefreshCw, Trophy, AlertCircle, Info, Star } from 'lucide-react';
 
 const FiveStarLogo = () => (
-  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none flex flex-col items-center gap-4">
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none flex flex-col items-center gap-4">
     <div className="flex gap-4">
-      <Star size={120} className="fill-blue-500 text-blue-500" />
-      <Star size={120} className="fill-blue-500 text-blue-500" />
-      <Star size={120} className="fill-blue-500 text-blue-500" />
+      <Star size={120} className="fill-red-600 text-red-600" />
+      <Star size={120} className="fill-red-600 text-red-600" />
+      <Star size={120} className="fill-red-600 text-red-600" />
     </div>
     <div className="flex gap-4">
-      <Star size={120} className="fill-blue-500 text-blue-500" />
-      <Star size={120} className="fill-blue-500 text-blue-500" />
+      <Star size={120} className="fill-red-600 text-red-600" />
+      <Star size={120} className="fill-red-600 text-red-600" />
     </div>
   </div>
 );
